@@ -1,0 +1,58 @@
+
+The FAT file system
+===================
+
+The FAT file system implementation in Hempl (or eLua) uses Elm Chan's
+excellent FatFS package. It can handle FAT12, FAT16 and FAT32 file
+systems in read/write mode and it packs a lot of functionality in a
+low footprint. Like the ROM filesystem it is integrated with the C
+library, so similar POSIX file manipulation will work in addition to
+accessing the filesystem via PicoLisp. Hempl adds a platform
+abstraction layer on top of FatFS which makes it very easy to port the
+FAT file system implementation between different Hempl targets. Since
+most SD/MMC cards can be accessed using the very common SPI interface,
+and since Hempl already provides an SPI platform interface, porting
+the FAT file system to a board is a fairly simple process.
+
+To use the FAT file system on your Hempl board (that has the proper
+hardware to access SD/MMC cards), first make sure that there is a
+working implementation of the Hempl SPI platform interface on your
+platform (as currently Hempl can access SD/MMC cards only via
+SPI). Then you need to enable the FAT file system module (MMCFS) in
+your binary image, as described on the building page.
+
+Using the FAT file system
+=========================
+
+To use the FAT filesystem with an SD or MMC card, first ensure that
+the card has been properly formatted as a FAT filesystem (many come
+preformatted with this file system).
+
+Next, ensure that you have connected the SD or MMC card using the pin
+configuration described in the table below. For more more information,
+see Elm Chan's page on SD/MMC with SPI.
+
+|---------+------------------------+---------------+----------------|
+| [PIN]   | [Static configuration] | [SD card pin] | [MMC card pin] |
+|---------+------------------------+---------------+----------------|
+| CS      | MMCFS_CS_PORT,         | DAT3/CS       | RES/CS         |
+|         | MMCFS_CS_PIN           |               |                |
+|---------+------------------------+---------------+----------------|
+| SPI_DO  | MMCFS_SPI_NUM          | CMD/DI        | CMD/DI         |
+|---------+------------------------+---------------+----------------|
+| SPI_DI  | MMCFS_SPI_NUM          | DAT0/D0       | DAT0/D0        |
+|---------+------------------------+---------------+----------------|
+| SPI CLK | MMCFS_SPI_NUM          | CLK           | CLK            |
+|---------+------------------------+---------------+----------------|
+
+Once configured, connected, and Hempl has started up, you are ready to
+work with the files on your card. To open a file on the SD/MMC card,
+all you need to do is to prefix its name with /mmc/, like this:
+
+    Hempl# picolisp /mmc/ttt.l
+
+Similarly, if you want to load a Lisp file from your card, you could
+say this:
+
+    Hempl# picolisp
+    : (load "/mmc/gpio-buttons.l")

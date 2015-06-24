@@ -1,0 +1,66 @@
+
+What is linenoise?
+==================
+
+Technically speaking, linenoise [1] is a small replacement library for
+GNU's readline [2] library, which is already supported by standard
+PicoLisp. What it actually does is give you a nice way to edit your
+PicoLisp commands inside the PicoLisp interpreter (by using the arrow
+keys and different other key sequences presented below), recall a line
+that was already entered, and save the history of the lines you
+entered. It's very convenient when prototyping within the PicoLisp
+interpreter, because all the lines entered at the prompt can be saved
+and turned into a proper application by editing the save file. It also
+takes the interpreter much closer to its desktop counterpart with
+regards to ease of use.
+
+Linenoise in Hempl
+==================
+
+Starting with version 0.1 Hempl (from eLua) contains a port of the
+linenoise library. To use it make sure it is included in the build.
+(refer to the build instructions in doc/ for details).  Note that
+linenoise requires ANSI terminal support (BUILD_TERM), so you need to
+enable that too. To use it, simply start the PicoLisp interpreter.
+The table below contains a list of keys that can be used to take
+advantage of linenoise:
+
+|----------------+------------------------------------------------|
+| [Keys(s)]      | [Action]                                       |
+|----------------+------------------------------------------------|
+| Left and right | Move left and right in the current prompt line |
+|----------------+------------------------------------------------|
+| Up             | Recall previous line                           |
+|----------------+------------------------------------------------|
+| Down           | Recall next line                               |
+|----------------+------------------------------------------------|
+| CTRL+C         | Abandon the current line                       |
+|----------------+------------------------------------------------|
+| Home           | Go to the beginning of the line                |
+|----------------+------------------------------------------------|
+| End            | Go to the end of the line                      |
+|----------------+------------------------------------------------|
+| CTRL+K         | Delete from the cursor to the end of the line  |
+|----------------+------------------------------------------------|
+| CTRL+U         | Delete the current line                        |
+|----------------+------------------------------------------------|
+
+To save the history, simply call 'elua-save-history' with the name of
+the file in which the history will be saved. Be careful - the file
+will be overwritten. The exact same keys presented in the table above
+can be used by the Hempl shell if linenoise is enabled for it.
+However, you won't be able to save history from the Hempl shell.  The
+reason why this component isn't enabled by default is that it takes
+RAM (like all good things in Hempl :) ) so keep this in mind when
+deciding if you want it or not.
+
+IMPORTANT: Linenoise support seems to be dependent on the terminal
+emulator used with Hempl on the PC side. It _hasn't_ been tested
+extensively with Hempl. Basically, it is supposed to work on
+TeraTerm [3] under Windows and with _screen_ in GNU/Linux. Other
+terminal emulators might not work equally well.
+
+References:
+[1]: https://github.com/antirez/linenoise
+[2]: http://tiswww.case.edu/php/chet/readline/rltop.html
+[3]: http://www.ayera.com/teraterm/

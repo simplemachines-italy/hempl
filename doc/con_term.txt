@@ -1,0 +1,68 @@
+
+Hempl consoles and terminals
+============================
+
+In Hempl, a console and a terminal serve two related, but different
+purposes:
+
+The console takes care of basic user input/output. They come in two
+flavours: serial consoles and TCP/IP (not supported in this release
+yet) consoles (note that the two can't coexist at the same time). The
+terminal enhances the console in order to take advantage of ANSI
+terminals and their advanced control functions, like explicit cursor
+positioning, clear screen and others. At this time, terminals work
+only over serial connections, not over TCP/IP (like consoles).
+
+Both components can be enabled and disabled as needed (they don't rely
+on each other).  See "building Hempl" for details on how to enable and
+disable components.
+
+Serial consoles
+===============
+
+The serial console input/output is handled by a generic layer
+(src/newlib/genstd.c) that can be used to easily adapt the console
+subsystem to a variety of input/output devices.  It needs just two
+functions, one for displaying characters and another one for receiving
+input with timeout:
+
+// Send/receive function types
+typedef void ( *p_std_send_char )( int fd, char c );
+typedef int ( *p_std_get_char )( s32 to );
+
+(the send function gets an additional fd parameter that you can use to
+differentiate between the standard C stdout and stderr output
+streams).
+
+To set them, use std_set_send_func and std_set_get_func, both defined
+in newlib/getstd.h.  Usually they are called from src/common.c and
+configured to work over UART by default:
+
+// *****************************************************************************
+// std functions and platform initialization
+
+static void uart_send( int fd, char c )
+{
+  fd = fd;
+  platform_uart_send( CON_UART_ID, c );
+}
+
+static int uart_recv( s32 to )
+{
+  return platform_uart_recv( CON_UART_ID, TERM_TIMER_ID, to );
+}
+
+void cmn_platform_init()
+{
+  // Set the send/recv functions                          
+  std_set_send_func( uart_send );
+  std_set_get_func( uart_recv );  
+}
+
+If you need another type of serial console device (for example a
+dedicated console running over a SPI connection) just call
+std_set_send_func/std_set_get_func with the appropriate function
+pointers.
+
+To enable serial consoles, define the BUILD_CON_GENERIC macro in your
+platform's platform_conf.h file.

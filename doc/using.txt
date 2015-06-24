@@ -1,0 +1,156 @@
+
+Using Hempl
+===========
+
+So, you already built and installed Hempl. Now it is time to (finally)
+have some fun with it :) You can compile Hempl with either console
+over UART (the default for Hempl v0.1).
+
+Using Hempl over serial connections
+===================================
+
+All you need to use Hempl over a serial connection is your target
+board connected to a PC running a terminal emulator program. If you're
+using Windows, TeraTerm is recommended. It's freeware, very powerful
+and also easy to use. The native Hyper Terminal progam can do too, as
+well as any most other terminal emulator programs.
+
+On GNU/Linux, you'll probably be using minicom. I use minicom too. It
+runs in text mode and is very powerful. (or any other terminal
+program)
+
+These are the main settings you need to look at:
+
+* Port setup: 115200 baud (38400 for STR7), 8N1(8 data bits, no parity,
+  one stop bit).
+* Hardware flow control: none
+* Newline handling: "CR" on receive, "CR+LF" on send (some terminal
+  programs won't give you a choice here). 
+
+Also, depending on the type of your board, you'll need some way to
+connect the board to a serial port on your PC or to USB if you're
+using an USB to serial converter. For example (as already explained
+here), the USB port on the LM3Sxxxx boards is dual, so you can use it
+as an USB to serial converter after downloading your firmware, thus
+you don't need any other type of connection. There's no universal rule
+here, it all depends on your board.  Feel free to write me a mail if
+you need help.
+
+Using Hempl over TCP/IP connections
+===================================
+
+Hempl doesn't support TCP/IP yet. This will probably be added in the
+next release.
+
+The shell
+=========
+
+No matter what's your physical connection (serial, TCP/IP or you PC's
+monitor after booting Hempl), after you setup the PC-target board
+connection and press the "RESET" button on your board or simply press
+ENTER if you're using the serial connection, you should see the Hempl
+shell prompt (if you enabled the shell in your build). The shell is a
+simple interactive command interpreter that allows you to:
+
+* Get help on shell usage with the help command
+* Query the version details on your platform
+* Run the PicoLisp interpreter in interactive mode just
+  like you'd do on a desktop machine
+* Run a PicoLisp program from the Hempl file system
+* List file names and sizes on the file system
+* Print contents from a (text) file in the file system
+
+A detailed description of the current shell commands
+====================================================
+
+* help
+
+Show a list of all shell commands.
+
+    Hempl# help
+
+* ver
+
+Print the version of the Hempl image installed on the board.
+Currently, the version only increments for official releases, so if
+there's inter-release code in the development tree, this isn't
+reflected in the version number.
+
+    Hempl# ver
+
+* recv
+
+Allows you to receive from the PC running the terminal emulator
+program, a C file via XMODEM and save it in the MMC card on your
+board.
+
+    Hempl# recv /mmc/foo.l
+
+To use this, your Hempl target image must be built with support for
+XMODEM (see building for details). Also, your terminal emulation
+program must support sending files via the XMODEM protocol. Both
+XMODEM with checksum and XMODEM with CRC are supported, but only
+XMODEM with 128 byte packets is allowed (XMODEM with 1K packets won't
+work).
+
+To use this feature, enter "recv" at the shell prompt followed by a
+file name. Hempl will respond with "Waiting for file ...". At this
+point you can send the file to the board via XMODEM.  Hempl will
+receive and execute the file. Don't worry when you see 'C' characters
+suddenly appearing on your terminal after you enter this command, this
+is how the XMODEM transfer is initiated. Since XMODEM is a protocol
+that uses serial lines, this command is not available if you're using
+terminal over TCP/IP.
+
+* picolisp
+
+This command allows you to start the PicoLisp interpreter, optionally
+passing command line arguments as you would do from a desktop machine.
+
+There are some diferences from the the PicoLisp in desktop version:
+
+* The command line can't be longer than 50 chars
+* If you want to execute a file from the ROM file system (or from
+another file system), remember to prefix it with /rom. For example, to
+execute baz.l, do this:
+
+    Hempl# picolisp /rom/baz.l
+
+* iv
+
+Edit files using "iv", a tiny vi clone for microcontrollers.
+
+    Hempl# iv /mmc/pilog.l
+
+* ls or dir
+
+Shows a list of all the files in the file systems used by Hempl, as
+well as their size and the total size of the given file system.
+
+    Hempl# ls
+
+* cat or type
+
+Prints the content of (usually text) files on the console.
+
+    Hempl# cat filename1 [filename2 filename3 ...]
+
+* cp
+
+Copies a file to another file. This command can be used to copy files
+between different file systems (for example between the ROM file
+system and the RFS file system).
+
+    Hempl# cp /rom/source.l /mmc/destination.l
+
+Note that both source and destination must be file names.
+
+* exit
+
+Exits the shell. This only makes sense if Hempl is compiled with
+terminal support over TCP/IP as it closes the telnet session to the
+Hempl board. Otherwise it just terminates the shell and blocks forever
+until you reset your board. Since we have no TCP/IP for Hempl at the
+moment, please ignore this option.
+
+    Hempl# exit

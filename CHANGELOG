@@ -1,0 +1,13 @@
+
+30.08.2014  SimpleMachines, Italy <simplemachines.it>
+
+  * First official release of Hempl (1.0)
+  * Supports the following platforms: avr32, stm32,
+  * Boards: Mizar32 (A, B, C), ET-STM32 (stamp module) and STM3210E-EVAL.
+  * Supports the following platform modules:
+    ADC, CAN, CPU, I2C, GPIO, PWM, SPI, TMR, UART, eLua (for shell
+    specific PicoLisp functions), platform module (for platform specific
+    PicoLisp functions) and that ks0108b (128x64) glcd module.
+  * New feature: iv, a vi like text editor for Hempl
+  * Update documentation for PicoLisp in Mizar32 book
+

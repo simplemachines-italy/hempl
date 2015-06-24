@@ -1,0 +1,23 @@
+
+Hempl
+=====
+
+Hempl is recursive for Hempl's embedded mini PicoLisp.
+
+It is a software system for natively programming microcontrollers
+(interactively and incrementally) using PicoLisp. Hempl can read
+S-expressions from a micro SD card or from the console (over UART, USB
+or Telnet).
+
+Hempl is influenced by and is a fork of the eLua project. For now, it
+runs on the following hardware platforms:
+
+* Mizar32 models A, B and C from SimpleMachines, Italy
+* STM3210E evaluation board (stm32f103ze) and ET-STM32 stamp board
+
+Acknowledgments 
+===============
+
+The Hempl project is named after "Hempel", a good friend from
+Munich. He also introduced Raman to Augustiner Edelstoff and Schneider
+Weisse ;)

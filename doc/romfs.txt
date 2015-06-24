@@ -1,0 +1,73 @@
+
+The ROM file system
+===================
+
+The ROM file system (ROMFS) is a small, read-only file system. It is
+integrated with the C library, so you can use standard POSIX calls
+(fopen/fread/fwrite...) to access it. It is also accessible directly
+from PicoLisp. The files in the file system are part of the Hempl
+binary image, thus they can't be modified after the image is
+built. For the same reason, you can't add/delete files after the image
+is built. ROMFS doesn't support sub-directories (yet).
+
+ROMFS is integrated with the build system for maximum flexibility on
+various platforms.  As a result, you can select the ROMFS contents for
+each board on which PicoLisp runs. Moreover, you can specify what
+applications (instead of individual files) go to the file system, as a
+real application might need more than a single Lisp program to run.
+
+Using ROMFS
+===========
+
+To use ROMFS, you have to copy the required files to the romfs/
+directory before building Hempl (a few samples are already provided in
+this directory). Keep in mind that the maximum file name of a ROMFS
+file is 14 characters including the dot between the file name and its
+extension. Make sure that the file names from romfs/ follow this
+rule. Then edit the main build script (SConstruct) to add a new
+application or to modify an existing one. All the applications that
+can be included in ROMFS are defined in the romfs array in SConstruct.
+Each application in the romfs array lists its files as shown below
+(Note: It is possible to include multiple dependant files in the same
+list - for example foobar.c and foobar.h)
+
+romfs = { 
+    'pilog' : [ 'pilog.l' ],
+    'hello' : [ 'hello.l' ],
+    'mizar32-buttons' : [ 'mizar32-buttons.l' ]
+}
+
+After this, you need to decide the application-to-board mapping. This
+is defined in another array in SConsctruct, named file_list. The
+definition of this array is shown below, the format is
+self-explanatory:
+
+file_list = { 'ET-STM32' : [ 'pilog', 'hello' ],
+              'STM3210E-EVAL' : [ 'pilog', 'hello' ]
+}
+
+What's left to do is build Hempl. As part of the build process,
+mkfs.py will be called, which will read the contents of the romfs/
+directory and output a C header file that contains a binary
+description of the file system. To use ROMFS from Lisp code, prefix
+its name with /rom/. For example, if you want to open the a.txt file
+in ROMFS, you should call fopen like this:
+
+If you want to execute one file from the ROM file system with
+PicoLisp, simply do this from the shell:
+
+    Hempl# picolisp
+    : (load "/rom/foobar.l")
+
+ROMFS modes
+===========
+
+The ROMFS can be added to the PicoLisp binary image in the following way:
+
+* verbatim: This is the only option which is also the default
+	    option. All the files are copied to the ROMFS directly,
+	    without any processing (PicoLisp doesn't compile anything
+	    remember?)
+
+See the building instructions to understand how to specify the ROMFS
+compilation mode.
