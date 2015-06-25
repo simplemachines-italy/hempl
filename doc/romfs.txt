@@ -29,7 +29,7 @@ application or to modify an existing one. All the applications that
 can be included in ROMFS are defined in the romfs array in SConstruct.
 Each application in the romfs array lists its files as shown below
 (Note: It is possible to include multiple dependant files in the same
-list - for example foobar.c and foobar.h)
+list - for example ttt.l and simul.l)
 
 romfs = { 
     'pilog' : [ 'pilog.l' ],
