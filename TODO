@@ -1,0 +1,9 @@
+
+List of TODOs for Hempl
+=======================
+
+* Integrate miniCodeROM feature
+* TCP/IP support using the uIP stack and the "net" module
+* Interrupts from within Hempl
+* Update documentation
+* User examples
