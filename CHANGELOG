@@ -7,7 +7,7 @@
   * Supports the following platform modules:
     ADC, CAN, CPU, I2C, GPIO, PWM, SPI, TMR, UART, eLua (for shell
     specific PicoLisp functions), platform module (for platform specific
-    PicoLisp functions) and that ks0108b (128x64) glcd module.
+    PicoLisp functions) and the ks0108b (128x64) glcd module.
   * New feature: iv, a vi like text editor for Hempl
   * Update documentation for PicoLisp in Mizar32 book
 
