@@ -19,3 +19,7 @@ inc/git_version.h
 *.*~
 core
 *.map
+cscope.files
+cscope.in.out
+cscope.out
+cscope.po.out
