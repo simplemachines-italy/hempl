@@ -38,7 +38,7 @@ def mkfs( dirname, outname, flist, mode, compcmd ):
   try:
     outfile = file( outfname, "wb" )
   except:
-    print "Unable to create output file"
+    print( "Unable to create output file" )
     return False
   
   global _crtline, _numdata, _bytecnt
@@ -54,7 +54,7 @@ def mkfs( dirname, outname, flist, mode, compcmd ):
   # Process all files
   for fname in flist:
     if len( fname ) > maxlen:
-      print "Skipping %s (name longer than %d chars)" % ( fname, maxlen )
+      print( "Skipping %s (name longer than %d chars)" % ( fname, maxlen ) )
       continue 
       
     # Get actual file name
@@ -62,7 +62,7 @@ def mkfs( dirname, outname, flist, mode, compcmd ):
     
     # Ensure it actually is a file
     if not os.path.isfile( realname ):
-      print "Skipping %s ... (not found or not a regular file)" % fname
+      print( "Skipping %s ... (not found or not a regular file)" % fname )
       continue
       
     # Try to open and read the file
@@ -71,7 +71,7 @@ def mkfs( dirname, outname, flist, mode, compcmd ):
     except:
       outfile.close()
       os.remove( outfname )
-      print "Unable to read %s" % fname    
+      print( "Unable to read %s" % fname )
       return False
     
     filedata = crtfile.read()
@@ -90,12 +90,12 @@ def mkfs( dirname, outname, flist, mode, compcmd ):
       _add_data( ord( c ), outfile )
     
     # Report
-    print "Encoded file %s (%d bytes)" % ( fname, len( filedata ) )
+    print( "Encoded file %s (%d bytes)" % ( fname, len( filedata ) ) )
     
   # All done, write the final "0" (terminator)
   _add_data( 0, outfile, False )
   outfile.write( "};\n\n#endif\n" );
   outfile.close()
-  print "Done, total size is %d bytes" % _bytecnt
+  print( "Done, total size is %d bytes" % _bytecnt )
   return True
 

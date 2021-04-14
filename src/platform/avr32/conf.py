@@ -13,7 +13,7 @@ elif comp[ 'board' ]  == "MIZAR32":
     specific_files += " sdramc.c"
     comp.Append(CPPDEFINES = {'BOARD' : 98})
 else:
-    print "Invalid board for %s platform (%s)" %( platform, comp[ 'board' ] )
+    print( "Invalid board for %s platform (%s)" %( platform, comp[ 'board' ] ) )
     sys.exit( -1 )
 
 # Prepend with path
@@ -21,10 +21,10 @@ specific_files = " ".join( [ "src/platform/%s/%s" % ( platform, f ) for f in spe
 
 # Choose ldscript according to choice of bootloader
 if comp[ 'bootloader' ] == "none":
-    print "Compiling for FLASH execution"
+    print( "Compiling for FLASH execution" )
     ldscript = "src/platform/%s/%s.ld" % ( platform, comp[ 'cpu' ].lower() )
 else :
-    print "Compiling for SDRAM execution"
+    print( "Compiling for SDRAM execution" )
     ldscript = "src/platform/%s/%s_%s.ld" % ( platform, comp[ 'cpu' ].lower(), comp[ 'bootloader'] )
 
 # Standard GCC Flags
@@ -49,7 +49,7 @@ tools[ 'avr32' ] = {}
 def progfunc_avr32( target, source, env ):
   outname = output + ".elf"
   os.system( "%s %s" % ( toolset[ 'size' ], outname ) )
-  print "Generating binary image..."
+  print( "Generating binary image..." )
   os.system( "%s -O ihex %s %s.hex" % ( toolset[ 'bin' ], outname, output ) )
 
   # print "Programming..."

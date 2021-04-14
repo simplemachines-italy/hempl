@@ -134,13 +134,15 @@ def _validator(key, val, env, vals):
       'Invalid value for option %s: %s' % (key, val))
 
 def MatchEnumVariable(key, help, default, allowed_values, map={}):
-  help = '%s (%s)' % (help, string.join(allowed_values, '|'))
+  help = '%s (%s)' % (help, '|'.join(allowed_values))
 
   validator = lambda key, val, env, vals=allowed_values: \
-              _validator(key, InsensitiveString(val), env, vals)
+              _validator(key, val, env, vals)
 
   converter = lambda val, map=map: \
-              map.get(val, allowed_values[allowed_values.index(InsensitiveString(val))])
+              map.get(val, allowed_values[allowed_values.index(val)])
+
+  #print(allowed_values.index(InsensitiveString(val)))
 
   return (key, help, default, validator, converter)
 
@@ -167,11 +169,11 @@ vars.AddVariables(
   MatchEnumVariable('board',
                     'selects board for target (cpu will be inferred)',
                     'auto',
-                    allowed_values=board_list.keys() + [ 'auto' ] ),
+                    allowed_values=list( board_list.keys() ) + [ 'auto' ] ),
   MatchEnumVariable('toolchain',
                     'specifies toolchain to use (auto=search for usable toolchain)',
                     'auto',
-                    allowed_values=toolchain_list.keys() + [ 'auto' ] ),
+                    allowed_values=list( toolchain_list.keys() ) + [ 'auto' ] ),
   MatchEnumVariable('lang',
                     'Build Hempl with support for the specified language',
                     'picolisp',
@@ -205,12 +207,12 @@ if not GetOption( 'help' ):
   #           cpu = <cpuname>
   #           board = <board> cpu=<cpuname>
   if comp['board'] == 'auto' and comp['cpu'] == 'auto':
-    print "Must specify board, cpu, or both"
+    print( "Must specify board, cpu, or both" )
     Exit( -1 )
   elif comp['board'] != 'auto' and comp['cpu'] != 'auto':
     # Check if the board, cpu pair is correct
     if not comp['cpu'] in board_list[ comp['board'] ]:
-      print "Invalid CPU %s for board %s" % ( comp['cpu'], comp['board'] )
+      print( "Invalid CPU %s for board %s" % ( comp['cpu'], comp['board'] ) )
       Exit( -1 )
   elif comp['board'] != 'auto':
     # Find CPU
@@ -223,7 +225,7 @@ if not GetOption( 'help' ):
         comp['board'] = b
         break
     else:
-      print "CPU %s not found" % comp['cpu']
+      print( "CPU %s not found" % comp['cpu'] )
       Exit( -1 )
 
   # Look for the given CPU in the list of platforms
@@ -233,19 +235,19 @@ if not GetOption( 'help' ):
       platform = p
       break
   else:
-    print "Unknown CPU %s" % comp['cpu']
-    print "List of accepted CPUs: "
+    print( "Unknown CPU %s" % comp['cpu'] )
+    print( "List of accepted CPUs: " )
     for p, v in platform_list.items():
-      print " ", p, "-->",
+      print( " ", p, "-->" )
       for cpu in v[ 'cpus' ]:
-        print cpu,
-      print
+        print( cpu )
+      print( "\n" )
     Exit( -1 )
 
   # Check the toolchain
   if comp['toolchain'] != 'auto':
     if not comp['toolchain'] in platform_list[ platform ][ 'toolchains' ]:
-      print "Invalid toolchain '%s' for CPU '%s'" % ( comp['toolchain'], comp['cpu'] )
+      print( "Invalid toolchain '%s' for CPU '%s'" % ( comp['toolchain'], comp['cpu'] ) )
       Exit( -1 )
     toolset = toolchain_list[ comp['toolchain'] ]
     comp[ 'CC' ] = toolset[ 'compile' ]
@@ -259,13 +261,13 @@ if not GetOption( 'help' ):
         comp['AS'] = comp['CC']
         toolset = toolchain_list[ comp['toolchain'] ]
     else:
-      print "Unable to find usable toolchain in your path."
-      print "List of accepted toolchains (for %s):" % ( comp['cpu'] )
-      print ', '.join(usable_chains)
+      print( "Unable to find usable toolchain in your path." )
+      print( "List of accepted toolchains (for %s):" % ( comp['cpu'] ) )
+      print( ', '.join(usable_chains) )
       Exit( -1 )
 
     if not conf.CheckCC():
-      print "Test compile failed with selected toolchain: %s" % (comp['toolchain'])
+      print( "Test compile failed with selected toolchain: %s" % (comp['toolchain']) )
       Exit( -1 )
 
   # CPU/allocator mapping (if allocator not specified)
@@ -290,25 +292,25 @@ if not GetOption( 'help' ):
     gen_header("git_version",{'elua_version': elua_vers, 'elua_str_version': "\"%s\"" % elua_vers } )
     conf.env.Append(CPPDEFINES = ['USE_GIT_REVISION'])
   except:
-    print "WARNING: unable to determine version from repository"
+    print( "WARNING: unable to determine version from repository" )
     elua_vers = "unknown"
 
   # User report
   if not GetOption( 'clean' ):
-    print
-    print "*********************************"
-    print "Compiling Hempl ..."
-    print "Language:       ", comp['lang']
-    print "CPU:            ", comp['cpu']
-    print "Board:          ", comp['board']
-    print "Platform:       ", platform
-    print "Allocator:      ", comp['allocator']
-    print "Boot Mode:      ", comp['boot']
-    print "Toolchain:      ", comp['toolchain']
-    print "ROMFS mode:     ", comp['romfs']
-    print "Version:        ", elua_vers
-    print "*********************************"
-    print
+    print( "\n" )
+    print( "*********************************" )
+    print( "Compiling Hempl ..." )
+    print( "Language:       ", comp['lang'] )
+    print( "CPU:            ", comp['cpu'] )
+    print( "Board:          ", comp['board'] )
+    print( "Platform:       ", platform )
+    print( "Allocator:      ", comp['allocator'] )
+    print( "Boot Mode:      ", comp['boot'] )
+    print( "Toolchain:      ", comp['toolchain'] )
+    print( "ROMFS mode:     ", comp['romfs'] )
+    print( "Version:        ", elua_vers )
+    print( "*********************************" )
+    print( "\n" )
 
   # Date ('build_date') configuration
   if comp['build_date'] == True: # Fetch date
@@ -389,7 +391,7 @@ if not GetOption( 'help' ):
   tools = {}
 
   # We get platform-specific data by executing the platform script
-  execfile( "src/platform/%s/conf.py" % platform )
+  exec( open( "src/platform/%s/conf.py" % platform ).read() )
 
   # Complete file list
   source_files = Split( app_files + specific_files + newlib_files + module_files + shell_files + iv_files + ks0108b_files )
@@ -404,7 +406,7 @@ if not GetOption( 'help' ):
 
   # Make ROM File System first
   if not GetOption( 'clean' ):
-    print "Building ROM File System..."
+    print( "Building ROM File System..." )
     flist = []
     os.chdir( "romfs" );
     for sample in glob.glob("*"):
@@ -413,12 +415,14 @@ if not GetOption( 'help' ):
     os.chdir( ".." )
     import mkfs
     mkfs.mkfs( "romfs", "romfiles", flist, comp['romfs'], compcmd )
+    """
     print
     if os.path.exists( "inc/romfiles.h" ):
       os.remove( "inc/romfiles.h" )
     shutil.move( "romfiles.h", "inc/" )
     if os.path.exists( "src/fs.o" ):
-      os.remove( "src/fs.o" )
+      os.remove( "src/fs.o" )]
+    """
 
   # comp.TargetSignatures( 'content' )
   # comp.SourceSignatures( 'MD5' )
