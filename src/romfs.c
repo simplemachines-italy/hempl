@@ -4,7 +4,7 @@
 #include <string.h>
 #include <errno.h>
 #include "devman.h"
-#include "romfiles.h"
+//#include "romfiles.h"
 #include <stdio.h>
 #include "ioctl.h"
 #include <fcntl.h>
